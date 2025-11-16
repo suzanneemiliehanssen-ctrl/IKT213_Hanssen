@@ -99,22 +99,26 @@ def hsv(image):
 
 #Shift the color values of a given RGB image
 def hue_shifted(image, emptyPictureArray, hue):
-    rows, columns, channels = image.shape
 
-    for i in range(rows):
-        for j in range(columns):
-            b, g, r = image[i, j, :]
+    for i in range(len(image)):
+        for j in range(len(image[i])):
+            r = image[i][j][0]
+            g = image[i][j][1]
+            b = image[i][j][2]
 
-            new_b = b + hue
-            new_g = g + hue
-            new_r = r + hue
+            if 255 - hue <= r <= 255:
+                new_r = 255
+            else: new_r = r + hue
 
-            #clamp the values
-            new_b = max(0, min(255, new_b))
-            new_g = max(0, min(255, new_g))
-            new_r = max(0, min(255, new_r))
+            if 255 - hue <= g <= 255:
+                new_g = 255
+            else: new_g = g + hue
 
-            emptyPictureArray[i, j, :] = [new_b, new_g, new_r]
+            if 255 - hue <= b <= 255:
+                new_b = 255
+            else: new_b = b + hue
+
+            emptyPictureArray[i][j] = [new_r, new_g, new_b]
 
     cv2.imshow('hue_shifted', emptyPictureArray)
 
@@ -156,29 +160,29 @@ def rotation(image, rotation_angle):
     
 
 def main():
-    padding(lena, 100) #functional
+    #padding(lena, 100) #functional
 
 
-    crop(lena, 50, 50, 50, 50) #functional
+    #crop(lena, 50, 50, 50, 50) #functional
 
 
-    resize(lena, 200, 200) #functional
+    #resize(lena, 200, 200) #functional
 
 
-    copy(lena) #functional
+    #copy(lena) #functional
 
 
-    grayscale(lena) #functional
+    #grayscale(lena) #functional
 
 
-    hsv(lena) #functional
+    #hsv(lena) #functional
 
 
-    shifted_img_array = np.zeros_like(lena, dtype=np.uint8)
-    hue_shifted(lena, shifted_img_array, 50) #functional
+    #shifted_img_array = np.zeros_like(lena, dtype=np.uint8)
+    #hue_shifted(lena, shifted_img_array, 50) #functional
 
 
-    smoothing(lena) #functional
+    #smoothing(lena) #functional
 
 
     user_input = input("Input '90' to rotate image 90 degrees clockwise"
