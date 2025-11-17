@@ -34,13 +34,12 @@ def stitch_images(image1, image2, H):
 
     return panorama
 
-def SIFT_withFLANN(image1, image2, return_H=False):
-    MIN_MATCH_COUNT = 10
+def SIFT_withFLANN(image_to_align, reference_image, max_features, good_match_percent, return_H=False):
 
     sift = cv2.SIFT_create()
 
-    kp1, des1 = sift.detectAndCompute(image1, None)
-    kp2, des2 = sift.detectAndCompute(image2, None)
+    kp1, des1 = sift.detectAndCompute(image_to_align, None)
+    kp2, des2 = sift.detectAndCompute(reference_image, None)
 
     FLANN_INDEX_KDTREE = 1
     index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
@@ -51,10 +50,10 @@ def SIFT_withFLANN(image1, image2, return_H=False):
 
     good = []
     for m, n in matches:
-        if m.distance < 0.7 * n.distance:
+        if m.distance < good_match_percent * n.distance:
             good.append(m)
 
-    if len(good) > MIN_MATCH_COUNT:
+    if len(good) > max_features:
         src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
         dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
         H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
@@ -64,20 +63,20 @@ def SIFT_withFLANN(image1, image2, return_H=False):
 
         matchesMask = mask.ravel().tolist()
 
-        image3 = cv2.drawMatches(image1, kp1, image2, kp2, good, None, matchColor=(0,255,0), matchesMask=matchesMask, flags=2)
+        image3 = cv2.drawMatches(image_to_align, kp1, reference_image, kp2, good, None, matchColor=(0,255,0), matchesMask=matchesMask, flags=2)
         cv2.imshow('image', image3)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
     else:
-        print("Not enough matches are found - {}/{}".format(len(good), MIN_MATCH_COUNT))
+        print("Not enough matches are found - {}/{}".format(len(good), max_features))
         matchesMask = None
 
 
 
 if __name__ == '__main__':
     img_1 = resize(img_1_tmp, 2, 'down')
-    H = SIFT_withFLANN(img_1, img_2, return_H=True)
+    H = SIFT_withFLANN(img_1, img_2,10, 0.7, return_H=True)
 
     if H is not None:
         panorama = stitch_images(img_1, img_2, H)

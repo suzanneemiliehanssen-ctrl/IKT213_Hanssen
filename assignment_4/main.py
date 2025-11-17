@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def harris_detection(image):
+def harris_detection(reference_image):
     image = cv2.imread("align_this.jpg")
     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 

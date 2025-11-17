@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def harris_corner_detection(image):
+def harris_corner_detection(reference_image):
     img = cv2.imread('harris.png')
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
